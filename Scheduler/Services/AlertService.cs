@@ -1,18 +1,26 @@
 ﻿using Scheduler.Data;
+using System;
+using System.Linq;
+using System.Collections.Generic;
 
 namespace Scheduler.Services
 {
     public class AlertService
     {
-        public static List<Models.AppointmentModel> GetUpcomingAppointments(int userId)
+        private readonly ApplicationDbContext _dbContext;
+
+        public AlertService(ApplicationDbContext dbContext)
         {
-            var upcomingAppointments = new List<Models.AppointmentModel>();
-            // Pseudo-code for database access:
-            // 1. Establish a database connection
-            // 2. Prepare a SQL query to select appointments where the userId matches
-            //    and the start time is between NOW and NOW + 15 minutes
-            // 3. Execute the query and populate upcomingAppointments based on the results
-            // 4. Return the list of upcoming appointments
+            _dbContext = dbContext;
+        }
+
+        public List<Models.AppointmentModel> GetUpcomingAppointments(int userId)
+        {
+            var now = DateTime.UtcNow;
+            var upcomingAppointments = _dbContext.Appointments
+                .Where(appt => appt.UserId == userId && appt.Start <= now.AddMinutes(15) && appt.Start > now)
+                .ToList();
+
             return upcomingAppointments;
         }
     }

@@ -1,10 +1,7 @@
 ﻿using Scheduler.Managers;
 using Scheduler.Services;
-using System;
 using System.Globalization;
 using System.Resources;
-using System.Threading;
-using System.Windows.Forms;
 using Scheduler.Data;
 
 namespace Scheduler.UI
@@ -15,13 +12,16 @@ namespace Scheduler.UI
         private readonly MainForm _mainForm;
         private ResourceManager _rm;
         private readonly ApplicationDbContext _dbContext;
+        private readonly AlertService _alertService;
 
-        public LogInForm(AuthenticationService authenticationService, MainForm mainForm, ApplicationDbContext dbContext)
+        public LogInForm(AuthenticationService authenticationService, MainForm mainForm, ApplicationDbContext dbContext,
+            AlertService alertService)
         {
             InitializeComponent();
             _authenticationService = authenticationService;
             _mainForm = mainForm;
             _dbContext = dbContext;
+            _alertService = alertService;
             SetCulture();
         }
 
@@ -58,7 +58,7 @@ namespace Scheduler.UI
 
                 if (userId > 0)
                 {
-                    var userSession = new SessionManager(_dbContext)
+                    var userSession = new SessionManager(_dbContext, _alertService)
                     {
                         UserId = userId,
                         userName = username,

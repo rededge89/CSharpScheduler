@@ -19,6 +19,7 @@ namespace Scheduler
                 var loggerService = serviceProvider.GetRequiredService<LoggerService>();
                 var localizationService = serviceProvider.GetRequiredService<LocalizationService>();
                 var authenticationService = serviceProvider.GetRequiredService<AuthenticationService>();
+                var alertService = serviceProvider.GetRequiredService<AlertService>();
 
                 // Ensure the database is created
                 dbContext.Database.EnsureCreated();
@@ -27,7 +28,6 @@ namespace Scheduler
 
                 // Backup the database
                 // backupService.BackupDatabase("backup.json");
-
 
                 // Truncate all tables before seeding
                 dbContext.TruncateAllTables(); // Comment out this line if you want to keep data between runs
@@ -45,7 +45,7 @@ namespace Scheduler
                 Application.EnableVisualStyles();
                 Application.SetCompatibleTextRenderingDefault(false);
                 var mainForm = serviceProvider.GetRequiredService<MainForm>();
-                var loginForm = new LogInForm(authenticationService, mainForm, dbContext);
+                var loginForm = new LogInForm(authenticationService, mainForm, dbContext, alertService);
                 Application.Run(loginForm);
             }
         }
@@ -59,6 +59,7 @@ namespace Scheduler
             services.AddTransient<LoggerService>();
             services.AddTransient<LocalizationService>();
             services.AddTransient<AuthenticationService>();
+            services.AddTransient<AlertService>();
             services.AddTransient<MainForm>();
 
             return services;
