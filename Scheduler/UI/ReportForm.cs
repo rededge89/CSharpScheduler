@@ -2,7 +2,7 @@
 using System.Globalization;
 using Microsoft.EntityFrameworkCore;
 using Scheduler.Data;
-using Scheduler.Managers; // Assuming SessionManager is in this namespace
+using Scheduler.Managers;
 
 namespace Scheduler.UI
 {
@@ -59,6 +59,7 @@ namespace Scheduler.UI
         private DataTable GetAppointmentTypesByMonth()
         {
             var reportData = _dbContext.Appointments
+                .Where(a => a.UserId == _sessionManager.UserId)
                 .GroupBy(a => new { a.Type, Month = a.Start.Month })
                 .Select(g => new
                 {

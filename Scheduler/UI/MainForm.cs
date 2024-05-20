@@ -1,5 +1,6 @@
 ﻿using Scheduler.Data;
 using Scheduler.Managers;
+using System.Linq;
 
 namespace Scheduler.UI
 {
@@ -71,18 +72,25 @@ namespace Scheduler.UI
             {
                 try
                 {
+                    var startLocal = appt.Start.Kind == DateTimeKind.Utc
+                        ? TimeZoneInfo.ConvertTimeFromUtc(appt.Start, _sessionManager.CurrentTimeZone)
+                        : appt.Start;
+                    var endLocal = appt.End.Kind == DateTimeKind.Utc
+                        ? TimeZoneInfo.ConvertTimeFromUtc(appt.End, _sessionManager.CurrentTimeZone)
+                        : appt.End;
+
+                    // Debugging output to verify the conversion
+                    // Console.WriteLine($"Original Start: {appt.Start}, Local Start: {startLocal}");
+                    // Console.WriteLine($"Original End: {appt.End}, Local End: {endLocal}");
+
                     return new
                     {
                         appt.AppointmentId,
                         appt.CustomerId,
                         appt.UserId,
                         appt.Title,
-                        Start = appt.Start.Kind == DateTimeKind.Utc
-                            ? TimeZoneInfo.ConvertTimeFromUtc(appt.Start, _sessionManager.CurrentTimeZone)
-                            : appt.Start,
-                        End = appt.End.Kind == DateTimeKind.Utc
-                            ? TimeZoneInfo.ConvertTimeFromUtc(appt.End, _sessionManager.CurrentTimeZone)
-                            : appt.End,
+                        Start = startLocal,
+                        End = endLocal,
                         appt.Description,
                         appt.Location,
                         appt.Contact,
